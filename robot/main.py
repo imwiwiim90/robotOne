@@ -30,7 +30,7 @@ class Agent(object):
     def __init__(self):
         GPIO.setmode(GPIO.BCM)
 
-        out_pins = [5,6]
+        out_pins = [5,6,4,17]
         for pin in out_pins:
             GPIO.setup(pin,GPIO.OUT)
 
@@ -122,12 +122,27 @@ class Agent(object):
                 return
         """
         print keys
+        if keys[u'joysticks']['right']['x'] > 0.5:
+            GPIO.output(17,0)
+            GPIO.output(4,1)
+        elif keys[u'joysticks']['right']['x'] < -0.5:
+            GPIO.output(4,0)
+            GPIO.output(17,1)
+        else:
+            GPIO.output(4,0)
+            GPIO.output(17,0)
+
+
+
         if keys[u'buttons'][u'ARROW_UP']:
             GPIO.output(6,0)
             GPIO.output(5,1)
         elif keys[u'buttons'][u'ARROW_DOWN']:
             GPIO.output(5,0)
             GPIO.output(6,1)
+        else:
+            GPIO.output(5,0)
+            GPIO.output(6,0)
 
         return
 
