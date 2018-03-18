@@ -114,12 +114,13 @@ class Agent(object):
         self.distances[i] = d
 
     def setKeys(self,keys,sckt):
-        if self.in_routine:
+        """if self.in_routine:
             if keys[u'buttons'][u'T']:
                 self.kill_routine()
                 self.in_routine = False
             else:
                 return
+        """
         print keys
         if keys[u'buttons'][u'ARROW_UP']:
             GPIO.output(6,0)
