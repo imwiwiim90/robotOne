@@ -405,7 +405,7 @@ while True:
     #data_broadcast.sendData(json.dumps(sensor_data),'sensor')
     #lock.release()
 
-    key_m.connected(data_broadcast.connected)
+    #key_m.connected(data_broadcast.connected)
 
     #print sensor_data
 
