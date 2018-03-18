@@ -4,7 +4,6 @@ import time
 import RPi.GPIO as GPIO
 import wiringpi
 import json
-import camera
 import threading
 import random
 from distanceSensor import *
