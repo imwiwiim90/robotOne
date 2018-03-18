@@ -120,7 +120,7 @@ class Agent(object):
                 self.in_routine = False
             else:
                 return
-
+        print keys
         if keys[u'buttons'][u'ARROW_UP']:
             GPIO.output(6,0)
             GPIO.output(5,1)
@@ -129,6 +129,7 @@ class Agent(object):
             GPIO.output(6,1)
 
         return
+
         if keys[u'buttons'][u"O"]:
             if keys[u'arrows'][u'x'] == -1:
                 self.start_routine("seesaw")
@@ -303,11 +304,10 @@ class SocketListener(threading.Thread):
     def run(self):
         while True:
             msg, addr = self.sckt.recvfrom(CHUNK_SIZE)
-            print msg
+            #print msg
             #self.bcast.addIP(addr)
             try:
                 json_keys = json.loads(msg)
-                print json_keys
                 self.km.setKeys(json_keys,self)
             except:
                 pass
