@@ -307,6 +307,7 @@ class SocketListener(threading.Thread):
             #self.bcast.addIP(addr)
             try:
                 json_keys = json.loads(msg)
+                print json_keys
                 self.km.setKeys(json_keys,self)
             except:
                 pass

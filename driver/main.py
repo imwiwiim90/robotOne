@@ -19,5 +19,6 @@ mailer.set_destination(ip_dir,PORT)
 while True:
 	time.sleep(1/30.0)
 	message = ctrl.getKeys()
+	print json.dumps(message, indent=2)
 	mailer.send(json.dumps(message))
 
