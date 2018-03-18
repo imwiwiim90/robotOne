@@ -309,8 +309,8 @@ class SocketListener(threading.Thread):
             try:
                 json_keys = json.loads(msg)
                 self.km.setKeys(json_keys,self)
-            except:
-                print 'error'
+            except Exception as e:
+                print e
 
     def end(self):
         self.sckt.close()
