@@ -10,5 +10,5 @@ print 'serial opened'
 i = 0
 while True:
 	if (wiringpi.serialDataAvail(serial) > 0):
-		line = wiringpi.serialGetChar(serial)
+		line = wiringpi.serialGetchar(serial)
 		print line
