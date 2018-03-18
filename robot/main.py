@@ -126,7 +126,7 @@ class Agent(object):
         if keys[u'buttons'][u'ARROW_UP']:
             GPIO.output(6,0)
             GPIO.output(5,1)
-        else if keys[u'buttons'][u'ARROW_DOWN']:
+        elif keys[u'buttons'][u'ARROW_DOWN']:
             GPIO.output(5,0)
             GPIO.output(6,1)
 
