@@ -6,7 +6,6 @@ import wiringpi
 import json
 import threading
 import random
-from distanceSensor import *
 import os
 import Routines
 import subprocess
