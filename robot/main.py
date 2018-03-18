@@ -310,7 +310,7 @@ class SocketListener(threading.Thread):
                 json_keys = json.loads(msg)
                 self.km.setKeys(json_keys,self)
             except:
-                pass
+                print 'error'
 
     def end(self):
         self.sckt.close()
