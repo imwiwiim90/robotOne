@@ -6,6 +6,6 @@ serial = wiringpi.serialOpen('/dev/ttyS0',9600)
 
 i = 0
 while True:
-	if (wiringpi.serialDataAvail(serial)):
-		line = wiringpi.serialGetChar(serial)
-		print line
+	wiringpi.serialPuts(serial,str(i%2))
+	time.sleep(0.1)
+	i+=1
