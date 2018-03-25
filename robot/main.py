@@ -28,9 +28,9 @@ class Agent(object):
         # output pin definitions
         self.arm_up = 26
         self.arm_down = 13
-        self.claw_open = 5
+        self.claw_open = 23
         self.claw_close = 24
-        self.forward = 23
+        self.forward = 5
         self.backward = 6
         self.right = 4
         self.left = 17
