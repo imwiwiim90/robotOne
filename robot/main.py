@@ -174,6 +174,7 @@ class Agent(object):
     # action = ('up'|'dowm')
     # move up or down the claw
     def arm(self,action):
+        print 'arm ' + action
         if action == 'up':
             GPIO.output(self.arm_down,0)
             GPIO.output(self.arm_up,1)
