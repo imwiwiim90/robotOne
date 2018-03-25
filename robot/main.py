@@ -536,7 +536,7 @@ while True:
 
     #key_m.connected(data_broadcast.connected)
 
-    #print sensor_data
+    print sensor_data
 
 
 skt_manager.join()
