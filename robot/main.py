@@ -39,8 +39,8 @@ class Agent(object):
         for pin in out_pins:
             GPIO.setup(pin,GPIO.OUT)
 
-        self.forward_pwm  = GPIO.PWM(5,15)
-        self.backward_pwm = GPIO.PWM(6,15)
+        self.forward_pwm  = GPIO.PWM(self.forward,15)
+        self.backward_pwm = GPIO.PWM(self.backward,15)
 
 
         for pwm in [self.forward_pwm,self.backward_pwm]:
@@ -174,18 +174,21 @@ class Agent(object):
     # action = ('up'|'dowm')
     # move up or down the claw
     def arm(self,action):
-        print 'arm ' + action
         if action == 'up':
             GPIO.output(self.arm_down,0)
             GPIO.output(self.arm_up,1)
-        if action == 'down':
+        elif action == 'down':
             GPIO.output(self.arm_up,0)
             GPIO.output(self.arm_down,1)
+        else:
+            GPIO.output(self.arm_up,0)
+            GPIO.output(self.arm_down,0)
+
 
     # forward or backward movement
     # k must be between -1 and 1
     def move(self,k):
-        k = float(int(k*10)/10)
+        k = float(int(k*10)/10)*100
         if k >= 0:
             self.backward_pwm.ChangeDutyCycle(0)
             self.forward_pwm.ChangeDutyCycle(k)
