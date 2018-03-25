@@ -29,8 +29,8 @@ class Agent(object):
         self.arm_up = 26
         self.arm_down = 13
         self.claw_open = 5
-        self.claw_close = 5
-        self.forward = 5
+        self.claw_close = 24
+        self.forward = 23
         self.backward = 6
         self.right = 4
         self.left = 17
