@@ -14,25 +14,55 @@ CHUNK_SIZE = 4096
 
 
 """
-12 -> left - front
-13 -> left - back
-4 -> right - front
-27 -> right - back
-18 -> serv
-20 -> serv
-21 -> serv
-19 -> dist
-26 -> dist
-5  -> dist
-6  -> dist
+5 -> forward
+6 -> backward
+17 -> left
+4 -> right
+18 -> hardware pwm / wrist
+
 """
 class Agent(object):
     def __init__(self):
         GPIO.setmode(GPIO.BCM)
 
-        out_pins = [5,6,4,17]
+        # output pin definitions
+        self.arm_up = 5
+        self.arm_down = 5
+        self.claw_open = 5
+        self.claw_close = 5
+        self.forward = 5
+        self.backward = 6
+        self.right = 4
+        self.left = 17
+        out_pins = [self.arm_up,self.arm_down,self.claw_open,self.claw_close,self.forward,self.backward,self.right,self.left]
+
         for pin in out_pins:
             GPIO.setup(pin,GPIO.OUT)
+
+        self.forward_pwm  = GPIO.PWM(5,15)
+        self.backward_pwm = GPIO.PWM(6,15)
+
+
+        for pwm in [self.forward_pwm,self.backward_pwm]:
+            pwm.start(0)
+            pwm.ChangeFrequency(15)
+
+        # hardware pwm
+        self.hardware_pwm_pin = 18
+        wiringpi.wiringPiSetupGpio()
+        wiringpi.pinMode(self.hardware_pwm_pin, wiringpi.GPIO.PWM_OUTPUT)
+        wiringpi.pwmSetMode(wiringpi.GPIO.PWM_MODE_MS)
+        wiringpi.pwmSetClock(192)
+        self.hardware_pwm_range = 2000
+        wiringpi.pwmSetRange(self.hardware_pwm_range)
+        self.hardware_pwm = int(self.hardware_pwm_range*0.055)
+        wiringpi.pwmWrite(self.hardware_pwm_pin,self.hardware_pwm) # 5.5% duty cycle
+        self.hardware_pwm_timeflag = time.time()
+
+        # itermitent move
+        self.itm_k = 100
+        self.itm_checkpoint = time.time()
+        self.itm_press = 0
 
         return
 
@@ -113,36 +143,142 @@ class Agent(object):
     def setDistance(self,i,d):
         self.distances[i] = d
 
+
+    ##########################################
+    ################ NEW #####################
+    ##########################################
+    def turn(self,direction):
+        if direction == 'left':
+            GPIO.output(self.left,0)
+            GPIO.output(self.right,1)
+        elif direction == 'right':
+            GPIO.output(self.right,0)
+            GPIO.output(self.left,1)
+        else:
+            GPIO.output(self.right,0)
+            GPIO.output(self.left,0)
+
+    # action = ('open'|'close')
+    # open or close the claw
+    def claw(self,action):
+        if action == 'open':
+            GPIO.output(self.claw_close,0)
+            GPIO.output(self.claw_open,1)
+        elif action == 'close':
+            GPIO.output(self.claw_open,0)
+            GPIO.output(self.claw_close,1)
+        else:
+            GPIO.output(self.claw_open,0)
+            GPIO.output(self.claw_close,0)
+
+    # action = ('up'|'dowm')
+    # move up or down the claw
+    def arm(self,action):
+        if action == 'up':
+            GPIO.output(self.arm_down,0)
+            GPIO.output(self.arm_up,1)
+        if action == 'down':
+            GPIO.output(self.arm_up,0)
+            GPIO.output(self.arm_down,1)
+
+    # forward or backward movement
+    # k must be between -1 and 1
+    def move(self,k):
+        k = float(int(k*10)/10)
+        if k >= 0:
+            self.backward_pwm.ChangeDutyCycle(0)
+            self.forward_pwm.ChangeDutyCycle(k)
+        else:
+            self.forward_pwm.ChangeDutyCycle(0)
+            self.backward_pwm.ChangeDutyCycle(-k)
+
+    # press should be -1,0,1 represening direction
+    def intermitent_move(self,press):
+        if (not abs(self.itm_press)) and abs(press):
+            self.itm_checkpoint = time.time()
+            self.move(press)
+        if abs(self.itm_press) == 1 and press == 0:
+            self.move(0)
+        self.itm_press = press
+
+    def set_itm_k(self,k):
+        if k > 3000:
+            self.itm_k = 3000
+        elif k < 100:
+            self.itm_k = 100
+        else:
+            self.itm_k = k
+
+    def loop(self):
+        # is in intermitent press
+        if (abs(self.itm_press)):
+            itm_time_delta = abs( self.itm_checkpoint - time.time() )
+            if ( itm_time_delta > self.itm_k ):
+                self.move(0)
+
+    def setHardwarePWM(self,direction):
+        if time.time() - self.hardware_pwm_timeflag < 0.1:
+            return
+
+        if direction == "left":
+            self.hardware_pwm += self.hardware_pwm_range*0.002
+        if direction == "right":
+            self.hardware_pwm -= self.hardware_pwm_range*0.002
+
+        if self.hardware_pwm > self.hardware_pwm_range*0.12:
+            self.hardware_pwm = self.hardware_pwm_range*0.12
+        if self.hardware_pwm < self.hardware_pwm_range*0.02:
+            self.hardware_pwm = self.hardware_pwm_range*0.02
+        wiringpi.pwmWrite(self.hardware_pwm_pin,int(self.hardware_pwm))
+        self.hardware_pwm_timeflag = time.time()
+
     def setKeys(self,keys,sckt):
-        """if self.in_routine:
-            if keys[u'buttons'][u'T']:
-                self.kill_routine()
-                self.in_routine = False
+
+        #### forward/backward move ####
+        # slow move
+        if not keys[u'buttons'][u'ARROW_UP']:
+            self.move(keys[u'joysticks']['right']['y'])   
+        # intermitent
+        self.intermitent_move(keys[u'buttons'][u'ARROW_UP'])
+        if keys[u'buttons'][u'R1']:
+            self.set_itm_k(self.itm_k + 50)
+        elif keys[u'buttons'][u'L1']:
+            self.set_itm_k(self.itm_k - 50)
+        
+        #### direction ####
+        if keys[u'buttons'][u'ARROW_LEFT']:
+            self.turn('left')
+        elif keys[u'buttons'][u'ARROW_RIGHT']:
+            self.turn('right')
+        else:
+            self.turn(None)
+
+        #### arm ####
+        # wrist
+        if keys[u'buttons'][u'R3']:
+            if keys[u'buttons'][u'R2']:
+                self.setHardwarePWM('right')
+            elif keys[u'buttons'][u'L2']:
+                self.setHardwarePWM('left')
+        # claw
+        elif keys[u'buttons'][u'L3']:
+            if keys[u'buttons'][u'R2']:
+                self.claw('close')
+            elif keys[u'buttons'][u'L2']:
+                self.claw('open')
             else:
-                return
-        """
-        print keys
-        if keys[u'joysticks']['right']['x'] > 0.5:
-            GPIO.output(17,0)
-            GPIO.output(4,1)
-        elif keys[u'joysticks']['right']['x'] < -0.5:
-            GPIO.output(4,0)
-            GPIO.output(17,1)
+                self.claw(None)
+        # up/down arm
         else:
-            GPIO.output(4,0)
-            GPIO.output(17,0)
+            if keys[u'buttons'][u'R2']:
+                self.arm('down')
+            elif keys[u'buttons'][u'L2']:
+                self.arm('up')
+            else:
+                self.arm(None)
 
 
-
-        if keys[u'buttons'][u'ARROW_UP']:
-            GPIO.output(6,0)
-            GPIO.output(5,1)
-        elif keys[u'buttons'][u'ARROW_DOWN']:
-            GPIO.output(5,0)
-            GPIO.output(6,1)
-        else:
-            GPIO.output(5,0)
-            GPIO.output(6,0)
+        
 
         return
 
@@ -226,30 +362,6 @@ class Agent(object):
     def restart(self):
         ps = subprocess.Popen("bash /home/pi/Desktop/robotZero/hard_updater.sh",shell=True)
 
-    def setServo(self,direction):
-        #if self.serv_lock == True:
-        #    return
-        #dcycle = val*8/2.0 + 2
-        #dcycle = int((int(dcycle*3)/3.0)/100.0*self.pwm_range)
-
-        #lastv = self.servo_pwm
-        #if lastv != dcycle:
-        #    wiringpi.pwmWrite(self.servo,dcycle)
-        #    self.servo_pwm = dcycle
-        if time.time() - self.servo_time_set < 0.1:
-            return
-
-        if direction == "up":
-            self.servo_pwm += self.pwm_range*0.002
-        if direction == "down":
-            self.servo_pwm -= self.pwm_range*0.002
-
-        if self.servo_pwm > self.pwm_range*0.12:
-            self.servo_pwm = self.pwm_range*0.12
-        if self.servo_pwm < self.pwm_range*0.02:
-            self.servo_pwm = self.pwm_range*0.02
-        wiringpi.pwmWrite(self.servo,int(self.servo_pwm))
-        self.servo_time_set = time.time()
 
     def setLED(self,state):
         GPIO.output(self.LED,state)
