@@ -26,8 +26,8 @@ class Agent(object):
         GPIO.setmode(GPIO.BCM)
 
         # output pin definitions
-        self.arm_up = 5
-        self.arm_down = 5
+        self.arm_up = 26
+        self.arm_down = 13
         self.claw_open = 5
         self.claw_close = 5
         self.forward = 5
