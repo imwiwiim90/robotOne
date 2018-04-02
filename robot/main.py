@@ -148,10 +148,10 @@ class Agent(object):
     ################ NEW #####################
     ##########################################
     def turn(self,direction):
-        if direction == 'left':
+        if direction == 'right':
             GPIO.output(self.left,0)
             GPIO.output(self.right,1)
-        elif direction == 'right':
+        elif direction == 'left':
             GPIO.output(self.right,0)
             GPIO.output(self.left,1)
         else:
@@ -215,6 +215,7 @@ class Agent(object):
 
     def loop(self):
         # is in intermitent press
+        print self.itm_k
         if (abs(self.itm_press)):
             itm_time_delta = abs( self.itm_checkpoint - time.time() )
             if ( itm_time_delta > self.itm_k ):
@@ -285,56 +286,6 @@ class Agent(object):
         
 
         return
-
-        if keys[u'buttons'][u"O"]:
-            if keys[u'arrows'][u'x'] == -1:
-                self.start_routine("seesaw")
-            if keys[u'arrows'][u'x'] == 1:
-                self.start_routine("test")
-            if keys[u'arrows'][u'y'] == 1:
-                self.start_routine("straight_walls")
-            if keys[u'arrows'][u'y'] == -1:
-                self.start_routine("release_bolt")
-            if keys[u'buttons'][u'L1']:
-                self.start_routine("follow_wall_left")
-            if keys[u'buttons'][u'R1']:
-                self.start_routine("follow_wall_right")
-
-
-            return
-        if keys[u'buttons'][u'OPTION']:
-            sckt.end()
-            self.restart()
-            sys.exit()
-
-        if keys[u'buttons'][u'R1']:
-            self.change_velocity('up')
-        if keys[u'buttons'][u'L1']:
-            self.change_velocity('down')
-        if keys[u'arrows'][u'x'] == -1:
-            self.set_direction('left')
-        elif keys[u'arrows'][u'x'] == 1:
-            self.set_direction('right')
-        elif keys[u'arrows'][u'y'] == -1:
-            self.set_direction('back')
-        elif keys[u'arrows'][u'y'] == 1:
-            self.set_direction('front')
-        else:
-            self.set_direction('steady')
-
-        if keys[u'buttons'][u'START']:
-            # system shutdown
-            os.system("sudo shutdown -h now")
-
-        self.setMovement(keys[u'joysticks'][u'left'][u'x'],keys[u'joysticks'][u'left'][u'y'])
-
-        self.lockServo(keys[u'buttons'][u'X'])
-
-
-        if keys[u'buttons'][u'R2']:
-            self.setServo("up")
-        elif keys[u'buttons'][u'L2']:
-            self.setServo("down")
 
     def lockServo(self,lock):
         self.serv_lock = lock
@@ -525,14 +476,10 @@ skt_manager.start()
 
 while True:
     time.sleep(1/30.0)
-    '''sensor_data = {
-        "left" :  distanceSensors.get(0),
-        "right" : distanceSensors.get(1),
-        "front" : distanceSensors.get(2),
-        "speed" : key_m.speed,
-        "inRoutine" : key_m.in_routine,
-        "claw" : (key_m.servo_pwm/key_m.pwm_range*100-2)/10*100,
-    }'''
+    key_m.loop()
+    sensor_data = {
+        "itm_k" :  key_m.itm_k,
+    }
     #key_m.sensor_data = sensor_data
     #lock.acquire()
     #data_broadcast.sendData(json.dumps(sensor_data),'sensor')
