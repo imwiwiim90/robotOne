@@ -218,6 +218,7 @@ class Agent(object):
         print self.itm_k
         if (abs(self.itm_press)):
             itm_time_delta = abs( self.itm_checkpoint - time.time() )
+            print '{0} - {1}'.format(self.itm_k,itm_time_delta)
             if ( itm_time_delta > self.itm_k ):
                 self.move(0)
 
@@ -387,7 +388,7 @@ class SocketListener(threading.Thread):
     def run(self):
         while True:
             msg, addr = self.sckt.recvfrom(CHUNK_SIZE)
-            print msg
+            #print msg
             #self.bcast.addIP(addr)
             try:
                 json_keys = json.loads(msg)
