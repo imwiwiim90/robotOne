@@ -215,9 +215,8 @@ class Agent(object):
 
     def loop(self):
         # is in intermitent press
-        print self.itm_k
         if (abs(self.itm_press)):
-            itm_time_delta = abs( self.itm_checkpoint - time.time() )
+            itm_time_delta = abs( self.itm_checkpoint - time.time()*100 )
             print '{0} - {1}'.format(self.itm_k,itm_time_delta)
             if ( itm_time_delta > self.itm_k ):
                 self.move(0)
