@@ -232,9 +232,9 @@ class Agent(object):
         # set led
         self.led_cont -= 1
         if self.led_cont < 0:
-            self.setLED(False)
+            self.setLed(False)
         else:
-            self.setLED(True)
+            self.setLed(True)
 
     '''
     def setHardwarePWM(self,direction):
@@ -345,8 +345,7 @@ class Agent(object):
         ps = subprocess.Popen("bash /home/pi/Desktop/robotZero/hard_updater.sh",shell=True)
 
 
-    def setLED(self,state):
-        GPIO.output(self.LED,state)
+
 
     def connected(self,state):
         self.setLED(state)
