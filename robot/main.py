@@ -217,7 +217,6 @@ class Agent(object):
         # is in intermitent press
         if (abs(self.itm_press)):
             itm_time_delta = abs( self.itm_checkpoint - time.time() )*1000
-            print '{0} - {1}'.format(self.itm_k,itm_time_delta)
             if ( itm_time_delta > self.itm_k ):
                 self.move(0)
 
@@ -244,7 +243,13 @@ class Agent(object):
         if not keys[u'buttons'][u'ARROW_UP']:
             self.move(keys[u'joysticks']['right']['y'])   
         # intermitent
-        self.intermitent_move(keys[u'buttons'][u'ARROW_UP'])
+        if keys[u'buttons'][u'ARROW_UP']:
+            self.intermitent_move( 1)
+        elif keys[u'buttons'][u'ARROW_DOWN']:
+            self.intermitent_move(-1)
+        else:
+            self.intermitent_move( 0)
+
         if keys[u'buttons'][u'R1']:
             self.set_itm_k(self.itm_k + 50)
         elif keys[u'buttons'][u'L1']:
