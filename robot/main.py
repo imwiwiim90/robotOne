@@ -34,7 +34,8 @@ class Agent(object):
         self.backward = 6
         self.right = 4
         self.left = 17
-        out_pins = [self.arm_up,self.arm_down,self.claw_open,self.claw_close,self.forward,self.backward,self.right,self.left]
+        self.led = 18
+        out_pins = [self.arm_up,self.arm_down,self.claw_open,self.claw_close,self.forward,self.backward,self.right,self.left,self.led]
 
         for pin in out_pins:
             GPIO.setup(pin,GPIO.OUT)
@@ -48,6 +49,7 @@ class Agent(object):
             pwm.ChangeFrequency(15)
 
         # hardware pwm
+        '''
         self.hardware_pwm_pin = 18
         wiringpi.wiringPiSetupGpio()
         wiringpi.pinMode(self.hardware_pwm_pin, wiringpi.GPIO.PWM_OUTPUT)
@@ -58,11 +60,15 @@ class Agent(object):
         self.hardware_pwm = int(self.hardware_pwm_range*0.055)
         wiringpi.pwmWrite(self.hardware_pwm_pin,self.hardware_pwm) # 5.5% duty cycle
         self.hardware_pwm_timeflag = time.time()
+        '''
 
         # itermitent move
         self.itm_k = 100
         self.itm_checkpoint = time.time()
         self.itm_press = 0
+
+        # connection cont
+        self.led_cont = 100
 
         return
 
@@ -147,6 +153,10 @@ class Agent(object):
     ##########################################
     ################ NEW #####################
     ##########################################
+    def setLed(self,status):
+        on_off = (1 if status else 0)
+        GPIO.output(self.led,on_off)
+
     def turn(self,direction):
         if direction == 'right':
             GPIO.output(self.left,0)
@@ -219,7 +229,14 @@ class Agent(object):
             itm_time_delta = abs( self.itm_checkpoint - time.time() )*1000
             if ( itm_time_delta > self.itm_k ):
                 self.move(0)
+        # set led
+        self.led_cont -= 1
+        if self.led_cont < 0:
+            self.setLED(False)
+        else:
+            self.setLED(True)
 
+    '''
     def setHardwarePWM(self,direction):
         if time.time() - self.hardware_pwm_timeflag < 0.1:
             return
@@ -235,8 +252,11 @@ class Agent(object):
             self.hardware_pwm = self.hardware_pwm_range*0.02
         wiringpi.pwmWrite(self.hardware_pwm_pin,int(self.hardware_pwm))
         self.hardware_pwm_timeflag = time.time()
+    '''
 
     def setKeys(self,keys,sckt):
+        #### connection cont ####
+        self.led_cont = 100
 
         #### forward/backward move ####
         # slow move
@@ -244,7 +264,7 @@ class Agent(object):
             self.move(keys[u'joysticks']['right']['y'])   
         # intermitent
         if keys[u'buttons'][u'ARROW_UP']:
-            self.intermitent_move( 1)
+            self.intermitent_move( k1 )
         elif keys[u'buttons'][u'ARROW_DOWN']:
             self.intermitent_move(-1)
         else:
@@ -265,13 +285,15 @@ class Agent(object):
 
         #### arm ####
         # wrist
+        '''
         if keys[u'buttons'][u'R3']:
             if keys[u'buttons'][u'R2']:
                 self.setHardwarePWM('right')
             elif keys[u'buttons'][u'L2']:
                 self.setHardwarePWM('left')
+        '''
         # claw
-        elif keys[u'buttons'][u'L3']:
+        if keys[u'buttons'][u'L3']:
             if keys[u'buttons'][u'R2']:
                 self.claw('close')
             elif keys[u'buttons'][u'L2']:
