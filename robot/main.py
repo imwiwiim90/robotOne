@@ -264,7 +264,7 @@ class Agent(object):
             self.move(keys[u'joysticks']['right']['y'])   
         # intermitent
         if keys[u'buttons'][u'ARROW_UP']:
-            self.intermitent_move( k1 )
+            self.intermitent_move( 1)
         elif keys[u'buttons'][u'ARROW_DOWN']:
             self.intermitent_move(-1)
         else:
