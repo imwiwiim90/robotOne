@@ -317,6 +317,7 @@ class Agent(object):
 
         
         if keys[u'buttons'][u'OPTION']:
+            sckt.end()
             self.restart()
 
         if keys[u'buttons'][u'START']:
