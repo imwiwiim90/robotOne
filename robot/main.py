@@ -260,7 +260,7 @@ class Agent(object):
 
         #### forward/backward move ####
         # slow move
-        if not keys[u'buttons'][u'ARROW_UP']:
+        if not keys[u'buttons'][u'ARROW_UP'] and not keys[u'buttons'][u'ARROW_DOWN']:
             self.move(keys[u'joysticks']['right']['y'])   
         # intermitent
         if keys[u'buttons'][u'ARROW_UP']:
