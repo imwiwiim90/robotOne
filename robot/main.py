@@ -348,7 +348,9 @@ class Agent(object):
         self.routine.start()
 
     def restart(self):
-        ps = subprocess.Popen("bash /home/pi/Desktop/robotOne/hard_updater.sh",shell=True)
+        if not self.restarting:
+            ps = subprocess.Popen("bash /home/pi/Desktop/robotOne/hard_updater.sh",shell=True)
+            self.restarting = True
 
     def shutdown(self):
         ps = subprocess.Popen('sudo halt',shell=True)
