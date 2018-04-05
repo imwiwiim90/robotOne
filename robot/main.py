@@ -257,6 +257,9 @@ class Agent(object):
     '''
 
     def setKeys(self,keys,sckt):
+        if self.restarting:
+            return
+
         #### connection cont ####
         self.led_cont = 100
 
@@ -350,9 +353,9 @@ class Agent(object):
         self.routine.start()
 
     def restart(self):
-        if not self.restarting:
-            ps = subprocess.Popen("bash /home/pi/Desktop/robotOne/hard_updater.sh",shell=True)
-            self.restarting = True
+        self.restarting = True
+        GPIO.cleanup()
+        ps = subprocess.Popen("bash /home/pi/Desktop/robotOne/hard_updater.sh",shell=True)
 
     def shutdown(self):
         ps = subprocess.Popen('sudo halt',shell=True)
