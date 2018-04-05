@@ -70,6 +70,8 @@ class Agent(object):
         # connection cont
         self.led_cont = 100
 
+        self.restarting = False
+
         return
 
         self.direction = 'steady'
