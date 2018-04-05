@@ -218,8 +218,8 @@ class Agent(object):
     def set_itm_k(self,k):
         if k > 3000:
             self.itm_k = 3000
-        elif k < 100:
-            self.itm_k = 100
+        elif k < 50:
+            self.itm_k = 50
         else:
             self.itm_k = k
 
@@ -311,6 +311,12 @@ class Agent(object):
 
 
         
+        if keys[u'buttons'][u'OPTION']:
+            self.restart()
+
+        if keys[u'buttons'][u'START']:
+            self.shutdown()
+
 
         return
 
@@ -342,7 +348,10 @@ class Agent(object):
         self.routine.start()
 
     def restart(self):
-        ps = subprocess.Popen("bash /home/pi/Desktop/robotZero/hard_updater.sh",shell=True)
+        ps = subprocess.Popen("bash /home/pi/Desktop/robotOne/hard_updater.sh",shell=True)
+
+    def shutdown(self):
+        ps = subprocess.Popen('sudo halt',shell=True)
 
 
 
