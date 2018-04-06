@@ -456,7 +456,7 @@ class SocketListener(threading.Thread):
         while True:
             # driver has not connected
             if self.driver_addr == None:
-                request_driver_addr()
+                self.request_driver_addr()
                 last_server_time = time.time()
                 time.sleep(3)
                 continue
