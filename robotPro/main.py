@@ -472,14 +472,16 @@ class SocketListener(threading.Thread):
             try:
                 msg, addr = self.sckt.recvfrom(CHUNK_SIZE)
             except:
+                print self.driver_addr
                 msg = None
 
-            try:
-                json_keys = json.loads(msg)
-                self.km.setKeys(json_keys,self)
-            except Exception as e:
-                print 'invalid ingoing keys'
-                print msg
+            if msg != None:
+                try:
+                    json_keys = json.loads(msg)
+                    self.km.setKeys(json_keys,self)
+                except Exception as e:
+                    print 'invalid ingoing keys'
+                    print msg
 
     def set_msg(self,msg):
         self.msg_out = msg
