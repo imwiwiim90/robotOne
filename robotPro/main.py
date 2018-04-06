@@ -479,6 +479,7 @@ class SocketListener(threading.Thread):
                 self.km.setKeys(json_keys,self)
             except Exception as e:
                 print 'invalid ingoing keys'
+                print msg
 
     def set_msg(self,msg):
         self.msg_out = msg
