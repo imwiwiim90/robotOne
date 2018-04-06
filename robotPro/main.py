@@ -467,7 +467,7 @@ class SocketListener(threading.Thread):
 
 
             # send drivers msg
-            self.sckt.sendto(msg_out,self.driver_addr)
+            self.sckt.sendto(self.msg_out,self.driver_addr)
 
             try:
                 msg, addr = self.sckt.recvfrom(CHUNK_SIZE)
