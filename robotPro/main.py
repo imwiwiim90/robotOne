@@ -423,13 +423,14 @@ class SocketListener(threading.Thread):
 
         # socket listen
         try:
-            s.bind(("","")) # as server
+            s.bind(("",0)) # as server
         except socket.error , msg:
             print 'Bind failed. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
             sys.exit()
         print 'Socket bind complete'
 
         self.sckt = s
+        self.driver_addr = None
         #self.bcast.set_socket(s)
 
     def request_driver_addr(self):
@@ -447,7 +448,7 @@ class SocketListener(threading.Thread):
             self.driver_addr = None
 
     def ping_server(self):
-        sckt.sendto('ROBOT|PING',self.server_addr)
+        self.sckt.sendto('ROBOT|PING',self.server_addr)
 
     def run(self):
         last_server_time = 0
@@ -456,6 +457,8 @@ class SocketListener(threading.Thread):
             # driver has not connected
             if self.driver_addr == None:
                 request_driver_addr()
+                last_server_time = time.time()
+                time.sleep(3)
                 continue
 
             if time.time() - last_server_time > server_ping_time:
@@ -477,7 +480,7 @@ class SocketListener(threading.Thread):
             except Exception as e:
                 print 'invalid ingoing keys'
 
-    def set_out_msg(self,msg):
+    def set_msg(self,msg):
         self.msg_out = msg
 
     def end(self):
@@ -565,6 +568,7 @@ while True:
     sensor_data = {
         "itm_k" :  key_m.itm_k,
     }
+    skt_manager.set_msg(json.dumps(sensor_data))
     #key_m.sensor_data = sensor_data
     #lock.acquire()
     #data_broadcast.sendData(json.dumps(sensor_data),'sensor')
