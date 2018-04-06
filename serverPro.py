@@ -53,6 +53,7 @@ while True:
 		msg = 'null'
 		if not other_addr == None:
 			msg = other_addr[0] + ':' + str(other_addr[1])
+		print 'send {0} to {1}'.format(msg,addr)
 		sckt.sendto(msg,addr)
 
 

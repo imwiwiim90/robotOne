@@ -3,6 +3,7 @@ import time
 import sys
 
 
+CHUNK_SIZE = 4096
 class MessageUDP(object):
 	def __init__(self):
 		self.server_addr = ('198.211.112.16',8001)
@@ -56,12 +57,14 @@ class MessageUDP(object):
 		# send msg
 		try:
 			self.socket.sendto(string, self.robot_addr)
+			print 'sent to {0}'.format(self.robot_addr)
 		except:
 			return False
 
 		# receive msg
 		try:
 			msg,addr = self.socket.recvfrom(CHUNK_SIZE)
+			print addr
 			return msg
 		except:
 			return False
