@@ -9,8 +9,11 @@ lock = threading.Lock()
 #ip_dir = '192.168.0.5'
 #ip_dir = '127.0.0.1'
 #ip_dir = '186.31.47.239'
-ip_dir = '192.168.0.109'
-PORT = 8000
+#ip_dir = '192.168.0.109'
+#ip_dir = '190.24.134.186'
+ip_dir = '186.84.49.253'
+#PORT = 1575
+PORT = '8000'
 ctrl = PS3Controller()
 mailer = MessageUDP()
 
