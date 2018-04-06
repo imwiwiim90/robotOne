@@ -462,7 +462,7 @@ class SocketListener(threading.Thread):
                 continue
 
             if time.time() - last_server_time > server_ping_time:
-                ping_server()
+                self.ping_server()
                 last_server_time = time.time()
 
 
