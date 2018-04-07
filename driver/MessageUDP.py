@@ -20,6 +20,7 @@ class MessageUDP(object):
 	def send(self,string):
 		try:
 			self.socket.sendto(string, (self.host,self.port))
+			print 'sent'
 			msg, addr = self.socket.recvfrom(4096)
 			return msg
 		except:

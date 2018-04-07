@@ -431,11 +431,11 @@ class SocketListener(threading.Thread):
 
     def run(self):
         while True:
-            msg, addr = self.sckt.recvfrom(CHUNK_SIZE)
 
             #print msg
             #self.bcast.addIP(addr)
             try:
+                msg, addr = self.sckt.recvfrom(CHUNK_SIZE)
                 json_keys = json.loads(msg)
                 self.km.setKeys(json_keys,self)
                 self.sckt.sendto(self.msg_out,addr)
