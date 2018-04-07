@@ -424,17 +424,21 @@ class SocketListener(threading.Thread):
             sys.exit()
         print 'Socket bind complete'
         self.sckt = s
+        s.settimeout(1.0)
+        self.msg_out = ''
         #self.bcast.set_socket(s)
 
 
     def run(self):
         while True:
             msg, addr = self.sckt.recvfrom(CHUNK_SIZE)
+
             #print msg
             #self.bcast.addIP(addr)
             try:
                 json_keys = json.loads(msg)
                 self.km.setKeys(json_keys,self)
+                self.sckt.sendto(self.msg_out,addr)
             except Exception as e:
                 print e
 
@@ -526,6 +530,7 @@ while True:
     sensor_data = {
         "itm_k" :  key_m.itm_k,
     }
+    skt_manager = set_msg(sensor_data)
     #key_m.sensor_data = sensor_data
     #lock.acquire()
     #data_broadcast.sendData(json.dumps(sensor_data),'sensor')
