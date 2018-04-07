@@ -436,7 +436,7 @@ class SocketListener(threading.Thread):
     def request_driver_addr(self):
         sckt = self.sckt
         try:
-            sckt.settimeout(3.0)
+            sckt.settimeout(1.0)
             sckt.sendto('ROBOT|PEER',self.server_addr)
             msg, addr = sckt.recvfrom(CHUNK_SIZE)
             if msg == 'null':
@@ -467,11 +467,9 @@ class SocketListener(threading.Thread):
 
 
             # send drivers msg
-            print 'msg:' + self.msg_out
             self.sckt.sendto(self.msg_out,self.driver_addr)
 
             try:
-                print 'listening'
                 msg, addr = self.sckt.recvfrom(CHUNK_SIZE)
             except:
                 print self.driver_addr

@@ -22,7 +22,7 @@ mailer = MessageUDP()
 while True:
 	time.sleep(1/30.0)
 	message = ctrl.getKeys()
-	print json.dumps(message, indent=2)
+	#print json.dumps(message, indent=2)
 	msg = mailer.send(json.dumps(message))
 	if msg:
 		print msg

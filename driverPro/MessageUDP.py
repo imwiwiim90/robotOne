@@ -29,7 +29,7 @@ class MessageUDP(object):
 	def request_robot_addr(self):
 		sckt = self.socket
 		try:
-			sckt.settimeout(3.0)
+			sckt.settimeout(1.0)
 			sckt.sendto('DRIVER|PEER',self.server_addr)
 			msg, addr = sckt.recvfrom(CHUNK_SIZE)
 			if msg == 'null':
@@ -57,15 +57,12 @@ class MessageUDP(object):
 		# send msg
 		try:
 			self.socket.sendto(string, self.robot_addr)
-			print 'sent to {0}'.format(self.robot_addr)
 		except:
 			return False
 
 		# receive msg
 		try:
-			print 'listening'
 			msg,addr = self.socket.recvfrom(CHUNK_SIZE)
-			print addr
 			return msg
 		except:
 			print 'deade'
