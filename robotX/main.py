@@ -530,7 +530,7 @@ while True:
     sensor_data = {
         "itm_k" :  key_m.itm_k,
     }
-    skt_manager = set_msg(sensor_data)
+    skt_manager.set_msg(sensor_data)
     #key_m.sensor_data = sensor_data
     #lock.acquire()
     #data_broadcast.sendData(json.dumps(sensor_data),'sensor')
