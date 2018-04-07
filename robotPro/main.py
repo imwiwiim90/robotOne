@@ -467,6 +467,7 @@ class SocketListener(threading.Thread):
 
 
             # send drivers msg
+            print 'msg:' + self.msg_out
             self.sckt.sendto(self.msg_out,self.driver_addr)
 
             try:
