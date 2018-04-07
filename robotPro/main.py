@@ -470,6 +470,7 @@ class SocketListener(threading.Thread):
             self.sckt.sendto(self.msg_out,self.driver_addr)
 
             try:
+                print 'listening'
                 msg, addr = self.sckt.recvfrom(CHUNK_SIZE)
             except:
                 print self.driver_addr

@@ -63,8 +63,10 @@ class MessageUDP(object):
 
 		# receive msg
 		try:
+			print 'listening'
 			msg,addr = self.socket.recvfrom(CHUNK_SIZE)
 			print addr
 			return msg
 		except:
+			print 'deade'
 			return False
